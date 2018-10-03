@@ -1,321 +1,180 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
-{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;\f1\fnil\fcharset0 Menlo-Regular;\f2\fnil\fcharset0 Menlo-BoldItalic;
-}
-{\colortbl;\red255\green255\blue255;\red127\green0\blue85;\red0\green0\blue192;\red106\green62\blue62;
-\red42\green0\blue255;\red63\green127\blue95;}
-{\*\expandedcolortbl;;\csgenericrgb\c49804\c0\c33333;\csgenericrgb\c0\c0\c75294;\csgenericrgb\c41569\c24314\c24314;
-\csgenericrgb\c16471\c0\c100000;\csgenericrgb\c24706\c49804\c37255;}
+{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;\red127\green0\blue85;}
+{\*\expandedcolortbl;;\csgenericrgb\c49804\c0\c33333;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww28600\viewh18000\viewkind0
 \deftab720
 \pard\pardeftab720\partightenfactor0
 
-\f0\b\fs32 \cf2 package
-\f1\b0 \cf0  percolation;\
+\f0\b\fs32 \cf2 package m2;\
 \
-
-\f0\b \cf2 import
-\f1\b0 \cf0  java.util.Scanner;\
+public class Percolation \{\
+	private boolean[][] sites;\
+	private int grid;\
+	private int beginNode;\
+	private int endNode;\
 \
- 
-\f0\b \cf2 class
-\f1\b0 \cf0  Percolation \{\
-
-\f0\b \cf2 private
-\f1\b0 \cf0  
-\f0\b \cf2 static
-\f1\b0 \cf0  
-\f0\b \cf2 final
-\f1\b0 \cf0  
-\f0\b \cf2 boolean
-\f1\b0 \cf0  
-\f2\i\b \cf3 True
-\f1\i0\b0 \cf0  = 
-\f0\b \cf2 false
-\f1\b0 \cf0 ;\
-
-\f0\b \cf2 private
-\f1\b0 \cf0  
-\f0\b \cf2 static
-\f1\b0 \cf0  
-\f0\b \cf2 final
-\f1\b0 \cf0  
-\f0\b \cf2 boolean
-\f1\b0 \cf0  
-\f2\i\b \cf3 False
-\f1\i0\b0 \cf0  = 
-\f0\b \cf2 false
-\f1\b0 \cf0 ;\
-
-\f0\b \cf2 int
-\f1\b0 \cf0 [][] \cf3 id\cf0 ;\
-
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf3 count\cf0 =0;\
-
-\f0\b \cf2 private
-\f1\b0 \cf0  
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf3 n\cf0 ;\
- Percolation(
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 n\cf0 )\
-\{
-\f0\b \cf2 this
-\f1\b0 \cf0 .\cf3 n\cf0 =\cf4 n\cf0 ;\
-	\cf3 id\cf0  = 
-\f0\b \cf2 new
-\f1\b0 \cf0  
-\f0\b \cf2 int
-\f1\b0 \cf0 [\cf4 n\cf0 ][\cf4 n\cf0 ];\
-	
-\f0\b \cf2 for
-\f1\b0 \cf0 (
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 i\cf0 =0;\cf4 i\cf0 <\cf4 n\cf0 ;\cf4 i\cf0 ++)\
-	\{\
-		
-\f0\b \cf2 for
-\f1\b0 \cf0 (
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 j\cf0 =0;\cf4 j\cf0 <\cf4 n\cf0 ;\cf4 j\cf0 ++)\
-		\{\
-			\cf3 id\cf0 [\cf4 i\cf0 ][\cf4 j\cf0 ]=0;\
-		\}\
+	private WeightedQuickUnionUF QU;\
+	private WeightedQuickUnionUF Backwash;\
+\
+	\
+	public Percolation(int N) \{\
+		N = N + 1;\
+		QU = new WeightedQuickUnionUF(N * N + 1); \
+		Backwash = new WeightedQuickUnionUF(N * N + 2);\
+		\
+		sites = new boolean[N][N];\
+		grid = N - 1;\
+		beginNode = 0;\
+		endNode = N * N + 1;\
+\
 	\}\
-\}\
-
-\f0\b \cf2 public
-\f1\b0 \cf0  
-\f0\b \cf2 void
-\f1\b0 \cf0  print()\
-\{\
-	
-\f0\b \cf2 for
-\f1\b0 \cf0 (
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 i\cf0 =0;\cf4 i\cf0 <\cf3 n\cf0 ;\cf4 i\cf0 ++)\
-	\{\
-		
-\f0\b \cf2 for
-\f1\b0 \cf0 (
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 j\cf0 =0;\cf4 j\cf0 <\cf3 n\cf0 ;\cf4 j\cf0 ++)\
-		\{\
-			System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .print(\cf3 id\cf0 [\cf4 i\cf0 ][\cf4 j\cf0 ]);\
+\
+	public void open(int i, int j) \{\
+		\
+\
+		checkException(i, j);\
+		if (!sites[j][i]) \{\
+			sites[j][i] = true;\
 		\}\
-		System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .println(\cf5 " "\cf0 );\
-	\}\
-\}\
-
-\f0\b \cf2 public
-\f1\b0 \cf0  
-\f0\b \cf2 void
-\f1\b0 \cf0  open(
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 row\cf0 , 
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 col\cf0 )\
-\{\
-	\cf3 id\cf0 [\cf4 row\cf0 ][\cf4 col\cf0 ]=1;\
-	\cf3 count\cf0 ++;\
-\}\
-
-\f0\b \cf2 public
-\f1\b0 \cf0  
-\f0\b \cf2 boolean
-\f1\b0 \cf0  isOpen(
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 row\cf0 , 
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 col\cf0 )\
-\{\
-	
-\f0\b \cf2 if
-\f1\b0 \cf0 (\cf3 id\cf0 [\cf4 row\cf0 ][\cf4 col\cf0 ]==1)\
-		
-\f0\b \cf2 return
-\f1\b0 \cf0  
-\f0\b \cf2 true
-\f1\b0 \cf0 ;\
-	
-\f0\b \cf2 else
-\f1\b0 \cf0  \
-		
-\f0\b \cf2 return
-\f1\b0 \cf0  
-\f0\b \cf2 false
-\f1\b0 \cf0 ;\
-\}\
-
-\f0\b \cf2 public
-\f1\b0 \cf0  
-\f0\b \cf2 boolean
-\f1\b0 \cf0  isFull(
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 row\cf0 , 
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 col\cf0 )\
-\{\
-	
-\f0\b \cf2 return
-\f1\b0 \cf0  
-\f0\b \cf2 true
-\f1\b0 \cf0 ;\
-\}\
-
-\f0\b \cf2 public
-\f1\b0 \cf0      
-\f0\b \cf2 int
-\f1\b0 \cf0  numberOfOpenSites()\
-\{\
-	
-\f0\b \cf2 return
-\f1\b0 \cf0  \cf3 count\cf0 ;\
-\}\
-
-\f0\b \cf2 public
-\f1\b0 \cf0  
-\f0\b \cf2 boolean
-\f1\b0 \cf0  percolationTest()\
-\{\
-	 
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 c\cf0 =1;\
-		
-\f0\b \cf2 for
-\f1\b0 \cf0 (
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 i\cf0 =0;\cf4 i\cf0 <\cf3 n\cf0 ;\cf4 i\cf0 ++)\
-		\{\
-			
-\f0\b \cf2 for
-\f1\b0 \cf0 (
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 j\cf0 =0;\cf4 j\cf0 <\cf3 n\cf0 ;\cf4 j\cf0 ++)\
-			\{\
-				
-\f0\b \cf2 if
-\f1\b0 \cf0 (\cf3 id\cf0 [\cf4 i\cf0 ][\cf4 j\cf0 ]==1)\
-				\{\
-					
-\f0\b \cf2 if
-\f1\b0 \cf0 (\cf4 i\cf0 >0&&\cf3 id\cf0 [\cf4 i\cf0 -1][\cf4 j\cf0 ]==1)\
-					 \{\
-					\cf4 c\cf0 ++;\
-					\
-					System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .println(\cf4 c\cf0 );\
-					
-\f0\b \cf2 break
-\f1\b0 \cf0 ;\
-					\
-					 \}\
-					
-\f0\b \cf2 if
-\f1\b0 \cf0 (\cf3 id\cf0 [\cf4 i\cf0 ][\cf4 j\cf0 +1]==1)\
-					\{\
-						
-\f0\b \cf2 if
-\f1\b0 \cf0 (\cf4 i\cf0 >0&&\cf3 id\cf0 [\cf4 i\cf0 -1][\cf4 j\cf0 ]==1)\
-								\{\
-							      \cf4 c\cf0 ++;\
-								\}\
-					\}\
-					
-\f0\b \cf2 if
-\f1\b0 \cf0 (\cf4 i\cf0 >0&&\cf3 id\cf0 [\cf4 i\cf0 -1][\cf4 j\cf0 ]==1)\
-					\{\
-						\
-						\cf4 c\cf0 ++;\
-						System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .println(\cf4 c\cf0 );\
-						
-\f0\b \cf2 break
-\f1\b0 \cf0 ;\
-						\
-					\}\
-				\}\
+		int index = indexCalc(j, i);\
+		\
+		if (j != 1) \{\
+			if (sites[j - 1][i]) \{\
+				QU.union(index, index - 1);\
+				Backwash.union(index, index - 1);\
 			\}\
 		\}\
-	
-\f0\b \cf2 if
-\f1\b0 \cf0 (\cf4 c\cf0 ==\cf3 n\cf0 )\
-	\{\
-		System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .println(\cf5 "true"\cf0 );\
-		
-\f0\b \cf2 return
-\f1\b0 \cf0  
-\f2\i\b \cf3 True
-\f1\i0\b0 \cf0 ;\
-	\}\
-	
-\f0\b \cf2 else
-\f1\b0 \cf0 \
-		System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .println(\cf5 "False"\cf0 );	\
-	    
-\f0\b \cf2 return
-\f1\b0 \cf0  
-\f2\i\b \cf3 False
-\f1\i0\b0 \cf0 ;\
-\}\
-    
-\f0\b \cf2 class
-\f1\b0 \cf0  Solution\{\
-	
-\f0\b \cf2 public
-\f1\b0 \cf0  
-\f0\b \cf2 static
-\f1\b0 \cf0  
-\f0\b \cf2 void
-\f1\b0 \cf0  \ul main(String[] \cf4 \ulc4 args\cf0 \ulc0 )\ulnone \
-	\{\
-		Scanner \cf4 sc\cf0  = 
-\f0\b \cf2 new
-\f1\b0 \cf0  Scanner(System.
-\f2\i\b \cf3 in
-\f1\i0\b0 \cf0 );\
-		\cf6 //System.out.println("Enter size of grid");\cf0 \
-		
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 n\cf0  = \cf4 sc\cf0 .nextInt();\
-		Percolation \cf4 p\cf0  =
-\f0\b \cf2 new
-\f1\b0 \cf0  Percolation(\cf4 n\cf0 );\
-		\cf4 p\cf0 .print();\
-		
-\f0\b \cf2 for
-\f1\b0 \cf0 (
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 i\cf0 =0;\cf4 i\cf0 <3;\cf4 i\cf0 ++)\
-		\cf6 //while(sc.hasNext())\cf0 \
-		\{\
-			
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 n1\cf0  = \cf4 sc\cf0 .nextInt();\
-			
-\f0\b \cf2 int
-\f1\b0 \cf0  \cf4 n2\cf0  = \cf4 sc\cf0 .nextInt();\
-			\cf4 p\cf0 .open(\cf4 n1\cf0 -1,\cf4 n2\cf0 -1);\
+		\
+		if (j != grid) \{\
+			if (sites[j + 1][i]) \{\
+				QU.union(index, index + 1);\
+				Backwash.union(index, index + 1);\
+			\}\
 		\}\
-		System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .println(\cf5 "number of open : "\cf0 +\cf4 p\cf0 .numberOfOpenSites());\
-		System.
-\f2\i\b \cf3 out
-\f1\i0\b0 \cf0 .println(\cf5 " percolates : "\cf0 +\cf4 p\cf0 .percolationTest());\
-	    \cf4 p\cf0 .print();\
+		\
+		if (i != 1) \{\
+			if (sites[j][i - 1]) \{\
+				QU.union(index, j + grid * (i - 1));\
+				Backwash.union(index, j + grid * (i - 1));\
+			\}\
+		\} else \{\
+			QU.union(beginNode, index);\
+			Backwash.union(beginNode, index);\
+		\}\
+		\
+\
+		if (i != grid) \{\
+			if (sites[j][i + 1]) \{\
+				QU.union(index, j + grid * (i + 1));\
+				Backwash.union(index, j + grid * (i + 1));\
+			\}\
+		\} else \{\
+			Backwash.union(index, endNode);\
+		\}\
+\
 	\}\
+\
+	public boolean isOpen(int i, int j) \{\
+\
+		checkException(i, j);\
+		\
+		return sites[j][i];\
+	\}\
+\
+	public boolean isFull(int i, int j) \{\
+\
+		checkException(i, j);\
+		\
+		return (QU.connected(indexCalc(j, i), beginNode));\
+	\}\
+\
+	public boolean percolates() \{\
+		return Backwash.connected(beginNode, endNode);\
+	\}\
+\
+	private int indexCalc(int i, int j) \{\
+		return i + grid * j;\
+	\}\
+\
+	private void checkException(int i, int j) \{\
+		if (i <= 0 || i > grid || j <= 0 || j > grid) \{\
+			throw new IndexOutOfBoundsException("row index i out of bounds");\
+		\}\
+	\}\
+\
 \}\
+public class WeightedQuickUnionUF \{\
+	private int[] id; \
+	private int[] sz; \
+	private int count; \
+\
+	\
+	public WeightedQuickUnionUF(int N) \{\
+		count = N;\
+		id = new int[N];\
+		sz = new int[N];\
+		for (int i = 0; i < N; i++) \{\
+			id[i] = i;\
+			sz[i] = 1;\
+		\}\
+	\}\
+\
+	\
+	public int count() \{\
+		return count;\
+	\}\
+\
+	\
+	public int find(int p) \{\
+		while (p != id[p])\
+			p = id[p];\
+		return p;\
+	\}\
+\
+	\
+	public boolean connected(int p, int q) \{\
+		return find(p) == find(q);\
+	\}\
+\
+	\
+	public void union(int p, int q) \{\
+		int i = find(p);\
+		int j = find(q);\
+		if (i == j)\
+			return;\
+\
+		\
+		if (sz[i] < sz[j]) \{\
+			id[i] = j;\
+			sz[j] += sz[i];\
+		\} else \{\
+			id[j] = i;\
+			sz[i] += sz[j];\
+		\}\
+		count--;\
+	\}\
+\
+\}\
+import java.util.Scanner;\
+\
+public class Solution \{\
+\
+	public static void main(String[] args) \{\
+		// TODO Auto-generated method stub\
+		Scanner sc = new Scanner(System.in);\
+		int grid_size = sc.nextInt(); \
+		Percolation perc = new Percolation(grid_size);\
+		while(sc.hasNext() ) \{\
+			int p = sc.nextInt();\
+			int q = sc.nextInt();\
+		\
+			perc.open(p, q);\
+		\}\
+		System.out.println(perc.percolates());\
+\
+	\}\
+\
 \}\
 \
 }
